@@ -16,7 +16,7 @@ enum Action
     idle
 };
 
-class Player
+class Player: public Serializable
 {
 private:
     int _id;
@@ -24,6 +24,9 @@ private:
     int _health = 3;
     int _beer = 2;
     int _ammo = 0;
+
+    Action currAction;
+    uint8_t currActionInt8;
 
 public:
     Player(string nombre, int id)
@@ -93,7 +96,39 @@ public:
         }
     }
 
+    void setCurrAction(Action act) {
+        currAction = act;
+        currActionInt8 = static_cast<uint8_t>(currAction);
+    }
+
     Action _currentAction;
+    static const size_t MESSAGE_SIZE = sizeof(uint8_t) * 3;
+
+    void to_bin() {
+
+        alloc_data(MESSAGE_SIZE);
+
+        memset(_data, 0, MESSAGE_SIZE);
+        _size = MESSAGE_SIZE;
+        char* tmp = _data;
+
+        //Vidas
+        memcpy(tmp, &type, sizeof(uint8_t));
+        tmp += sizeof(uint8_t);
+        //Balas
+        memcpy(tmp, &type, sizeof(uint8_t));
+        tmp += sizeof(uint8_t);
+        //Cervezas
+        memcpy(tmp, &type, sizeof(uint8_t));
+        tmp += sizeof(uint8_t);
+        //Accion
+        memcpy(tmp, &type, sizeof(uint8_t));
+        tmp += sizeof(uint8_t);
+        //Id
+        memcpy(tmp, &type, sizeof(uint8_t));
+        tmp += sizeof(uint8_t);
+
+    }
 };
 
 class GameManager
