@@ -2,6 +2,15 @@
 #include <unistd.h>
 #include <string.h>
 #include <vector>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#include <thread>
+
+#include "Serializable.h"
+#include "Socket.h"
+#include "GameManager.h"
 
 class ChatMessage: public Serializable
 {
@@ -32,7 +41,7 @@ public:
 class ChatServer
 {
 public:
-    ChatServer(const char * s, const char * p): socket(s, p)
+    ChatServer(const char * s, const char * p): socket(s, p), gm()
     {
         int aux;
         aux = socket.bind();
@@ -46,7 +55,7 @@ private:
 
     std::vector<Socket *> clients;
 
-
+    GameManager gm;
     Socket socket;
 };
 
@@ -54,22 +63,29 @@ class ChatClient
 {
 public:
 
-    ChatClient(const char * s, const char * p, const char * n):socket(s, p),
-        nick(n){};
-    virtual ~ChatClient(){  logout();};
- 
-    void login();
-
-    void logout();
+    ChatClient(const char * s, const char * p):socket(s, p) {};
+    virtual ~ChatClient(){};
 
     void input_thread();
 
     void net_thread();
 
-private:
-
     Socket socket;
-
-    std::string nick;
 };
 
+
+/////////////////////////////////////////////////////////////////////////////
+
+
+class ClientPlayer : public Player, public ChatClient {
+    public:
+        ClientPlayer(const char * s, const char * p, const char * n, int id) : Player(n, id), ChatClient(s, p) {}
+
+        virtual void login() {
+            connect(socket.sd, &socket.sa, socket.sa_len);
+
+            socket.send(*this, socket);
+
+            std::cout << "LOGIN" << std::endl;
+        }
+};

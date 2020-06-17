@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <string>
+#include <string.h>
+
+#include "Serializable.h"
 
 using namespace std;
 
@@ -29,6 +32,7 @@ private:
     uint8_t currActionInt8;
 
 public:
+    Player() {}
     Player(string nombre, int id)
     {
         _name = nombre;
@@ -101,6 +105,10 @@ public:
         currActionInt8 = static_cast<uint8_t>(currAction);
     }
 
+    void setId(int newid) {
+        _id = newid;
+    }
+
     Action _currentAction;
     static const size_t MESSAGE_SIZE = sizeof(uint8_t) * 3;
 
@@ -113,22 +121,56 @@ public:
         char* tmp = _data;
 
         //Vidas
-        memcpy(tmp, &type, sizeof(uint8_t));
+        memcpy(tmp, &_health, sizeof(uint8_t));
         tmp += sizeof(uint8_t);
         //Balas
-        memcpy(tmp, &type, sizeof(uint8_t));
+        memcpy(tmp, &_ammo, sizeof(uint8_t));
         tmp += sizeof(uint8_t);
         //Cervezas
-        memcpy(tmp, &type, sizeof(uint8_t));
+        memcpy(tmp, &_beer, sizeof(uint8_t));
         tmp += sizeof(uint8_t);
         //Accion
-        memcpy(tmp, &type, sizeof(uint8_t));
+        memcpy(tmp, &currActionInt8, sizeof(uint8_t));
         tmp += sizeof(uint8_t);
         //Id
-        memcpy(tmp, &type, sizeof(uint8_t));
+        memcpy(tmp, &_id, sizeof(uint8_t));
         tmp += sizeof(uint8_t);
 
     }
+
+    int from_bin(char* bobj) {
+        std::cout << "frombin" << std::endl;
+        alloc_data(MESSAGE_SIZE);
+
+        std::cout << "memcpy" << std::endl;
+        memcpy(static_cast<void *>(_data), bobj, MESSAGE_SIZE);
+        _size = MESSAGE_SIZE;
+
+        std::cout << "tmp" << std::endl;
+        char * tmp = _data;
+
+        //Vidas
+        std::cout << "vidas" << std::endl;
+        memcpy(&_health, tmp, sizeof(uint8_t));
+        tmp += sizeof(uint8_t);
+        //Balas
+        std::cout << "balas" << std::endl;
+        memcpy(&_ammo, tmp, sizeof(uint8_t));
+        tmp += sizeof(uint8_t);
+        //Cervezas
+        memcpy(&_beer, tmp, sizeof(uint8_t));
+        tmp += sizeof(uint8_t);
+        //Accion
+        memcpy(&currActionInt8, tmp, sizeof(uint8_t));
+        tmp += sizeof(uint8_t);
+        //Id
+        memcpy(&_id, tmp, sizeof(uint8_t));
+        tmp += sizeof(uint8_t);
+
+        return 0;
+
+    }
+
 };
 
 class GameManager
@@ -138,6 +180,7 @@ private:
     Player *player2;
 
 public:
+    GameManager() : player1(nullptr), player2(nullptr) {}
     GameManager(Player *player_one, Player *player_two)
     {
         player1 = player_one;
@@ -160,6 +203,8 @@ public:
     void battlePhase();
 
     int mainGameLoop();
+
+    void joinPlayers(Player* playerone, Player* playertwo);
     
 };
 #endif

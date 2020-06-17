@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     int      sig;
 
     ChatServer es(argv[1], argv[2]);
-    es.do_messages();
+    es.accept_players();
 
     sigemptyset(&waitset);
     sigaddset(&waitset, SIGQUIT);

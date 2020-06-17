@@ -28,7 +28,7 @@ int ChatMessage::from_bin(char * bobj)
 
     char * tmp = _data;
 
-    memcpy(&type, tmp , sizeof(uint8_t));
+    memcpy(&type, tmp, sizeof(uint8_t));
     tmp += sizeof(uint8_t);
 
     memcpy(&nick[0], tmp, sizeof(char) * 8);
@@ -66,6 +66,7 @@ bool ChatServer::accept_players() {
     listen(socket.sd,16);
     while(true)
     {
+        ChatMessage obj;
         struct sockaddr_in client_addr;
         socklen_t client_len = sizeof(struct sockaddr_in);
 
@@ -73,13 +74,23 @@ bool ChatServer::accept_players() {
         std::cout << "Conexion desde IP: " << inet_ntoa(client_addr.sin_addr) << " PUERTO: " << ntohs(client_addr.sin_port) << std::endl;
         Socket* sock1 = new Socket((struct sockaddr*)&client_addr, client_len);
         sock1->sd = sd_client1;
+        socket.recv(obj, sock1);
+        std::cout << obj.nick << std::endl;
+        Player* newplayer1 = new Player();
+        newplayer1->from_bin(obj.data());
+
         
         int sd_client2 = accept(socket.sd, (struct sockaddr *) &client_addr, &client_len);
         std::cout << "Conexion desde IP: " << inet_ntoa(client_addr.sin_addr) << " PUERTO: " << ntohs(client_addr.sin_port) << std::endl;
         Socket* sock2 = new Socket((struct sockaddr*)&client_addr, client_len);
         sock2->sd = sd_client2;
+        socket.recv(obj, sock2);
+        Player* newplayer2 = new Player();
+        newplayer2->from_bin(obj.data());
 
-        std::thread t(&ChatServer::do_messages, this, sock1, sock2);
+        gm.joinPlayers(newplayer1, newplayer2);
+
+        std::thread t(&GameManager::mainGameLoop, gm);
         t.detach();
     }
 
@@ -87,39 +98,17 @@ bool ChatServer::accept_players() {
 
 /////////////////////////////////////////////////////////////////////////////
 
-void ChatClient::login()
-{
-    std::string msg;
-    msg = "Login";
-    ChatMessage em(nick, msg);
-    em.type = ChatMessage::LOGIN;
-    socket.send(em, socket);
-    std::cout << "LOGIN" << std::endl;
-}
-
-void ChatClient::logout()
-{
-  std::string msg;
-
-  ChatMessage em(nick, msg);
-  em.type = ChatMessage::LOGOUT;
-  socket.send(em, socket);
-
-  std::cout << "LOGOUT" << std::endl;
-}
-
 void ChatClient::input_thread()
 {
     while (true)
     {
-        std::string msg; 
-
+        std::string msg;
         std::getline(std::cin, msg);
 
-        ChatMessage em(nick, msg);
+        ChatMessage em("jose", msg);
         em.type = ChatMessage::MESSAGE;
-        
-        socket.send(em, socket);
+        std::cout << "antes de send" << std::endl;
+        int cosa = socket.send(em, socket);
     }
 }
 

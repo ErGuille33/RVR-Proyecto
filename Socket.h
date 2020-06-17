@@ -52,7 +52,6 @@ public:
     friend bool operator== (const Socket &s1, const Socket &s2);
 
     int sd;
-protected:
 
     struct sockaddr sa;
     socklen_t       sa_len;
