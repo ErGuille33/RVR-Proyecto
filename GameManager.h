@@ -7,6 +7,8 @@
 
 #include "Serializable.h"
 
+class PlayerInfo;
+
 using namespace std;
 
 enum Action
@@ -19,9 +21,9 @@ enum Action
     idle
 };
 
-class Player: public Serializable
+class Player
 {
-private:
+protected:
     int _id;
     string _name;
     int _health = 3;
@@ -37,6 +39,11 @@ public:
     {
         _name = nombre;
         _id = id;
+        _health = 3;
+        _ammo = 0;
+        _beer = 3;
+        currAction = cargar;
+        currActionInt8 = 1;    
     };
     ~Player(){};
 
@@ -109,67 +116,16 @@ public:
         _id = newid;
     }
 
+    void setAll(int id, string name, int health, int ammo, int beer, int action) {
+        _id = id;
+        _name = name;
+        _health = health;
+        _ammo = ammo;
+        _beer = beer;
+        currAction = static_cast<Action>(action);
+    }
+
     Action _currentAction;
-    static const size_t MESSAGE_SIZE = sizeof(uint8_t) * 3;
-
-    void to_bin() {
-
-        alloc_data(MESSAGE_SIZE);
-
-        memset(_data, 0, MESSAGE_SIZE);
-        _size = MESSAGE_SIZE;
-        char* tmp = _data;
-
-        //Vidas
-        memcpy(tmp, &_health, sizeof(uint8_t));
-        tmp += sizeof(uint8_t);
-        //Balas
-        memcpy(tmp, &_ammo, sizeof(uint8_t));
-        tmp += sizeof(uint8_t);
-        //Cervezas
-        memcpy(tmp, &_beer, sizeof(uint8_t));
-        tmp += sizeof(uint8_t);
-        //Accion
-        memcpy(tmp, &currActionInt8, sizeof(uint8_t));
-        tmp += sizeof(uint8_t);
-        //Id
-        memcpy(tmp, &_id, sizeof(uint8_t));
-        tmp += sizeof(uint8_t);
-
-    }
-
-    int from_bin(char* bobj) {
-        std::cout << "frombin" << std::endl;
-        alloc_data(MESSAGE_SIZE);
-
-        std::cout << "memcpy" << std::endl;
-        memcpy(static_cast<void *>(_data), bobj, MESSAGE_SIZE);
-        _size = MESSAGE_SIZE;
-
-        std::cout << "tmp" << std::endl;
-        char * tmp = _data;
-
-        //Vidas
-        std::cout << "vidas" << std::endl;
-        memcpy(&_health, tmp, sizeof(uint8_t));
-        tmp += sizeof(uint8_t);
-        //Balas
-        std::cout << "balas" << std::endl;
-        memcpy(&_ammo, tmp, sizeof(uint8_t));
-        tmp += sizeof(uint8_t);
-        //Cervezas
-        memcpy(&_beer, tmp, sizeof(uint8_t));
-        tmp += sizeof(uint8_t);
-        //Accion
-        memcpy(&currActionInt8, tmp, sizeof(uint8_t));
-        tmp += sizeof(uint8_t);
-        //Id
-        memcpy(&_id, tmp, sizeof(uint8_t));
-        tmp += sizeof(uint8_t);
-
-        return 0;
-
-    }
 
 };
 
@@ -180,12 +136,10 @@ private:
     Player *player2;
 
 public:
-    GameManager() : player1(nullptr), player2(nullptr) {}
-    GameManager(Player *player_one, Player *player_two)
-    {
-        player1 = player_one;
-        player2 = player_two;
-    };
+    GameManager() {
+        player1 = new Player("a", 0);
+        player2 = new Player("b", 0);
+    }
     ~GameManager()
     {
         delete player1;
@@ -204,7 +158,7 @@ public:
 
     int mainGameLoop();
 
-    void joinPlayers(Player* playerone, Player* playertwo);
+    void joinPlayers(PlayerInfo* playerone, PlayerInfo* playertwo);
     
 };
 #endif

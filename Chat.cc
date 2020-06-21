@@ -62,11 +62,10 @@ void ChatServer::do_messages(Socket* sock1, Socket* sock2)
 bool ChatServer::accept_players() {
     std::cout << "accept_players" << std::endl;
 
-
     listen(socket.sd,16);
     while(true)
     {
-        ChatMessage obj;
+        PlayerInfo obj(0, "a", 0, 0, 0, 0);
         struct sockaddr_in client_addr;
         socklen_t client_len = sizeof(struct sockaddr_in);
 
@@ -75,9 +74,8 @@ bool ChatServer::accept_players() {
         Socket* sock1 = new Socket((struct sockaddr*)&client_addr, client_len);
         sock1->sd = sd_client1;
         socket.recv(obj, sock1);
-        std::cout << obj.nick << std::endl;
-        Player* newplayer1 = new Player();
-        newplayer1->from_bin(obj.data());
+        PlayerInfo* newplayer1 = new PlayerInfo(obj._id, obj._name, obj._health, obj._ammo, obj._beer, obj._action);
+        std::cout << newplayer1->_name << " se ha conectado" << std::endl;
 
         
         int sd_client2 = accept(socket.sd, (struct sockaddr *) &client_addr, &client_len);
@@ -85,8 +83,8 @@ bool ChatServer::accept_players() {
         Socket* sock2 = new Socket((struct sockaddr*)&client_addr, client_len);
         sock2->sd = sd_client2;
         socket.recv(obj, sock2);
-        Player* newplayer2 = new Player();
-        newplayer2->from_bin(obj.data());
+        PlayerInfo* newplayer2 = new PlayerInfo(obj._id, obj._name, obj._health, obj._ammo, obj._beer, obj._action);
+        std::cout << newplayer2->_name << " se ha conectado" << std::endl;
 
         gm.joinPlayers(newplayer1, newplayer2);
 
@@ -122,5 +120,68 @@ void ChatClient::net_thread()
 
         std::cout << &em.nick[0] << ": " << &em.message[0] << std::endl;
     }
+}
+
+////////////////////////////////////////////////////////////////////////////
+
+void PlayerInfo::to_bin() {
+    alloc_data(MESSAGE_SIZE);
+
+    memset(_data, 0, MESSAGE_SIZE);
+    _size = MESSAGE_SIZE;
+    char* tmp = _data;
+
+    //Vidas
+    memcpy(tmp, &_health, sizeof(uint8_t));
+    tmp += sizeof(uint8_t);
+    //Balas
+    memcpy(tmp, &_ammo, sizeof(uint8_t));
+    tmp += sizeof(uint8_t);
+    //Cervezas
+    memcpy(tmp, &_beer, sizeof(uint8_t));
+    tmp += sizeof(uint8_t);
+    //Accion
+    memcpy(tmp, &_action, sizeof(uint8_t));
+    tmp += sizeof(uint8_t);
+    //Id
+    memcpy(tmp, &_id, sizeof(uint8_t));
+    tmp += sizeof(uint8_t);
+    //Name
+    _name[8] = '\0';
+    memcpy(tmp, _name.c_str(), sizeof(char) * 8);
+    tmp += sizeof(char) * 8;
+
+}
+
+int PlayerInfo::from_bin(char* data) {
+    alloc_data(MESSAGE_SIZE);
+
+    memcpy(static_cast<void *>(_data), data, MESSAGE_SIZE);
+    _size = MESSAGE_SIZE;
+
+    char * tmp = _data;
+
+    //Vidas
+    memcpy(&_health, tmp, sizeof(uint8_t));
+    tmp += sizeof(uint8_t);
+    //Balas
+    memcpy(&_ammo, tmp, sizeof(uint8_t));
+    tmp += sizeof(uint8_t);
+    //Cervezas
+    memcpy(&_beer, tmp, sizeof(uint8_t));
+    tmp += sizeof(uint8_t);
+    //Accion
+    memcpy(&_action, tmp, sizeof(uint8_t));
+    tmp += sizeof(uint8_t);
+    //Id
+    memcpy(&_id, tmp, sizeof(uint8_t));
+    tmp += sizeof(uint8_t);
+    //Name
+    memcpy(&_name[0], tmp, sizeof(char) * 8);
+    tmp += sizeof(char) * 8;
+    _name[8] = '\0';
+
+        return 0;
+
 }
 

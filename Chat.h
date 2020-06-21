@@ -38,27 +38,6 @@ public:
     std::string message;
 };
 
-class ChatServer
-{
-public:
-    ChatServer(const char * s, const char * p): socket(s, p), gm()
-    {
-        int aux;
-        aux = socket.bind();
-    };
-
-    void do_messages(Socket* sock1, Socket* sock2);
-
-    bool accept_players();
-
-private:
-
-    std::vector<Socket *> clients;
-
-    GameManager gm;
-    Socket socket;
-};
-
 class ChatClient
 {
 public:
@@ -76,6 +55,33 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////
 
+class PlayerInfo : public Serializable {
+
+    public:
+    PlayerInfo() {}
+    PlayerInfo(int id, string name, int health, int ammo, int beer, int action) : Serializable() {
+        _id = id;
+        _name = name;
+        _health = health;
+        _beer = beer;
+        _ammo = ammo;
+        _action = action;
+    }
+
+    void to_bin();
+    int from_bin(char * data);
+
+    int _id;
+    string _name;
+    int _health;
+    int _beer;
+    int _ammo;
+    int _action;
+
+    static const size_t MESSAGE_SIZE = sizeof(uint8_t) * 5 + sizeof(char) * 8;
+
+};
+
 
 class ClientPlayer : public Player, public ChatClient {
     public:
@@ -84,8 +90,36 @@ class ClientPlayer : public Player, public ChatClient {
         virtual void login() {
             connect(socket.sd, &socket.sa, socket.sa_len);
 
-            socket.send(*this, socket);
+            PlayerInfo pi(_id, _name, _health, _ammo, _beer, currActionInt8);
+            std::cout << pi._health << std::endl;
+            socket.send(pi, socket);
 
             std::cout << "LOGIN" << std::endl;
         }
+};
+
+////////////////////////////////////////////////////////////
+
+class ChatServer
+{
+public:
+    ChatServer(const char * s, const char * p): socket(s, p), gm()
+    {
+        int aux;
+        aux = socket.bind();
+    };
+
+    void do_messages(Socket* sock1, Socket* sock2);
+
+    bool accept_players();
+
+private:
+
+    std::vector<Socket *> clients;
+
+    ClientPlayer* client1;
+    ClientPlayer* client2;
+
+    GameManager gm;
+    Socket socket;
 };

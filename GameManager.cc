@@ -1,4 +1,5 @@
 #include "GameManager.h"
+#include "Chat.h"
 
 using namespace std;
 
@@ -410,8 +411,9 @@ void GameManager::battlePhase()
     }
 }
 
-void GameManager::joinPlayers(Player* playerone, Player* playertwo) {
-    player1 = playerone;
-    player2 = playertwo;
+void GameManager::joinPlayers(PlayerInfo* playerone, PlayerInfo* playertwo) {
+    std::cout << playerone->_name << std::endl;
+    player1->setAll(playerone->_id, playerone->_name, playerone->_health, playerone->_ammo, playerone->_beer, playerone->_action);
+    player2->setAll(playertwo->_id, playertwo->_name, playertwo->_health, playertwo->_ammo, playertwo->_beer, playertwo->_action);
 }
 
