@@ -7,30 +7,32 @@
 #include <arpa/inet.h>
 
 #include <thread>
-
 #include "Serializable.h"
 #include "Socket.h"
 #include "GameManager.h"
+#include <iostream>
 
-class ChatMessage: public Serializable
+using namespace std;
+using std::string;
+class ChatMessage : public Serializable
 {
 public:
     static const size_t MESSAGE_SIZE = sizeof(char) * 88 + sizeof(uint8_t);
 
     enum MessageType
     {
-        LOGIN   = 0,
+        LOGIN = 0,
         MESSAGE = 1,
-        LOGOUT  = 2
+        LOGOUT = 2
     };
 
     ChatMessage(){};
 
-    ChatMessage(const std::string& n, const std::string& m):nick(n),message(m){};
+    ChatMessage(const std::string &n, const std::string &m) : nick(n), message(m){};
 
     void to_bin();
 
-    int from_bin(char * bobj);
+    int from_bin(char *bobj);
 
     uint8_t type;
 
@@ -41,8 +43,7 @@ public:
 class ChatClient
 {
 public:
-
-    ChatClient(const char * s, const char * p):socket(s, p) {};
+    ChatClient(const char *s, const char *p) : socket(s, p){};
     virtual ~ChatClient(){};
 
     void input_thread();
@@ -52,24 +53,26 @@ public:
     Socket socket;
 };
 
-
 /////////////////////////////////////////////////////////////////////////////
 
-class PlayerInfo : public Serializable {
+class PlayerInfo : public Serializable
+{
 
-    public:
+public:
     PlayerInfo() {}
-    PlayerInfo(int id, string name, int health, int ammo, int beer, int action) : Serializable() {
+    PlayerInfo(int id, string name, int health, int ammo, int beer, int action) : Serializable()
+    {
         _id = id;
         _name = name;
         _health = health;
         _beer = beer;
         _ammo = ammo;
         _action = action;
+        _turnoJugador = 0;
     }
 
     void to_bin();
-    int from_bin(char * data);
+    int from_bin(char *data);
 
     int _id;
     string _name;
@@ -77,25 +80,70 @@ class PlayerInfo : public Serializable {
     int _beer;
     int _ammo;
     int _action;
+    int _turnoJugador;
 
-    static const size_t MESSAGE_SIZE = sizeof(uint8_t) * 5 + sizeof(char) * 8;
-
+    static const size_t MESSAGE_SIZE = sizeof(uint8_t) * 6 + sizeof(char) * 8;
 };
 
+class ClientPlayer : public Player, public ChatClient
+{
+public:
+    ClientPlayer(const char *s, const char *p, const char *n, int id) : Player(n, id), ChatClient(s, p) {}
 
-class ClientPlayer : public Player, public ChatClient {
-    public:
-        ClientPlayer(const char * s, const char * p, const char * n, int id) : Player(n, id), ChatClient(s, p) {}
+    virtual void login()
+    {
+        connect(socket.sd, &socket.sa, socket.sa_len);
+        pi = new PlayerInfo(_id, _name, _health, _ammo, _beer, currActionInt8);
+        //std::cout << pi._health << std::endl;
+        socket.send(*pi, socket);
 
-        virtual void login() {
-            connect(socket.sd, &socket.sa, socket.sa_len);
+        std::cout << "LOGIN" << std::endl;
+        waitForInput();
+    }
 
-            PlayerInfo pi(_id, _name, _health, _ammo, _beer, currActionInt8);
-            std::cout << pi._health << std::endl;
-            socket.send(pi, socket);
-
-            std::cout << "LOGIN" << std::endl;
+    virtual void playerLoop()
+    {
+        while (true)
+        {
+            showStats();
+            waitForInput();
+            input();
         }
+    }
+
+    void waitForInput()
+    {
+        Socket *outSocket;
+        do
+        {
+            std::cout << _name << " me cago en to"<< std::endl;
+            socket.recv(*pi, outSocket);
+        } while (pi->_turnoJugador = 0);
+        std::cout << _name << " introduce acción: 0-Cargar 1-Disparar 2-Defensa 3-Curación 4-SuperDisparo 5-Nada" << std::endl;
+        
+    }
+
+    void input()
+    {
+
+        string aux;
+        getline(std::cin, aux);
+        std::cout << aux << std::endl;
+
+        int numb;
+        numb = stoi(aux);
+
+        pi->_action = numb;
+        socket.send(*pi, socket);
+
+        std::cout << "Enviado" << std::endl;
+    }
+
+    void showStats()
+    {
+        cout << pi->_name << " Vidas: " << pi->_health << " Balas: " << pi->_ammo << " Cervezas: " << pi->_beer << endl;
+    }
+    PlayerInfo *pi;
 };
 
 ////////////////////////////////////////////////////////////
@@ -103,23 +151,22 @@ class ClientPlayer : public Player, public ChatClient {
 class ChatServer
 {
 public:
-    ChatServer(const char * s, const char * p): socket(s, p), gm()
+    ChatServer(const char *s, const char *p) : socket(s, p), gm()
     {
         int aux;
         aux = socket.bind();
     };
 
-    void do_messages(Socket* sock1, Socket* sock2);
+    void do_messages(Socket *sock1, Socket *sock2);
 
     bool accept_players();
 
 private:
-
     std::vector<Socket *> clients;
 
-    ClientPlayer* client1;
-    ClientPlayer* client2;
+    ClientPlayer *client1;
+    ClientPlayer *client2;
 
-    GameManager gm;
+    GameManager *gm;
     Socket socket;
 };

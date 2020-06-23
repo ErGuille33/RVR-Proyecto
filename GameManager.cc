@@ -3,9 +3,9 @@
 
 using namespace std;
 
-void GameManager::selectionPhase(Player *player)
+void GameManager::selectionPhase()
 {
-    string aux = "";
+   /* string aux = "";
     int numb;
 
     do
@@ -14,19 +14,23 @@ void GameManager::selectionPhase(Player *player)
         getline(cin, aux);
         numb = stoi(aux);
     } while (numb < 0 || numb > 6);
-    player->_currentAction = static_cast<Action>(numb);
+    player->_currentAction = static_cast<Action>(numb);*/
+    socket->send(*playerInfo1,*sock1);
+    socket->send(*playerInfo1,*sock2);
+
+    std::cout << "hora de eldegir" << std::endl;
 }
 
 int GameManager::mainGameLoop(){
     {
-        std::cout << player1->getName() << std::endl;
-        std::cout << player2->getName() << std::endl;
+        std::cout << player1->getId() << std::endl;
+        std::cout << player2->getId() << std::endl;
         while (player1->getHealth() > 0 && player2->getHealth() > 0)
         {
-            selectionPhase(player1);
-            selectionPhase(player2);
+            selectionPhase();
 
             battlePhase();
+            
             showStats(player1);
             showStats(player2);
         }
@@ -411,9 +415,19 @@ void GameManager::battlePhase()
     }
 }
 
-void GameManager::joinPlayers(PlayerInfo* playerone, PlayerInfo* playertwo) {
-    std::cout << playerone->_name << std::endl;
+void GameManager::joinPlayers(PlayerInfo* playerone, PlayerInfo* playertwo, Socket* sockone, Socket* socktwo, Socket* socketMain) {
+    
     player1->setAll(playerone->_id, playerone->_name, playerone->_health, playerone->_ammo, playerone->_beer, playerone->_action);
     player2->setAll(playertwo->_id, playertwo->_name, playertwo->_health, playertwo->_ammo, playertwo->_beer, playertwo->_action);
+    playerInfo1 = playerone;
+    playerInfo2 = playertwo;
+
+    playerInfo1->_turnoJugador = 1;
+    playerInfo2->_turnoJugador = 1;
+
+    sock1 = sockone;
+    sock2 = socktwo;
+
+    socket = socketMain;
 }
 

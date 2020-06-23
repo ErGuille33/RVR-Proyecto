@@ -5,6 +5,7 @@
 #include <string>
 #include <string.h>
 
+#include "Socket.h"
 #include "Serializable.h"
 
 class PlayerInfo;
@@ -30,8 +31,8 @@ protected:
     int _beer = 2;
     int _ammo = 0;
 
-    Action currAction;
-    uint8_t currActionInt8;
+    Action currAction = Action::idle;
+    int currActionInt8 = 5;
 
 public:
     Player() {}
@@ -42,8 +43,8 @@ public:
         _health = 3;
         _ammo = 0;
         _beer = 3;
-        currAction = cargar;
-        currActionInt8 = 1;    
+        currAction = Action::idle;
+        currActionInt8 = 5;    
     };
     ~Player(){};
 
@@ -134,6 +135,13 @@ class GameManager
 private:
     Player *player1;
     Player *player2;
+    PlayerInfo* playerInfo1;
+    PlayerInfo* playerInfo2;
+
+    Socket* sock1;
+    Socket* sock2;
+
+    Socket* socket;
 
 public:
     GameManager() {
@@ -151,14 +159,14 @@ public:
         cout << player->getName() << " Vidas: " << player->getHealth() << " Balas: " << player->getAmmo() << " Cervezas: " << player->getBeer() << endl;
     }
     //Para seleccionar la acción
-    void selectionPhase(Player *player);
+    void selectionPhase();
 
     //Este método consiste en un switch enorme que contemplará todos los casos posibles a la hora de batirse en duelo
     void battlePhase();
 
     int mainGameLoop();
 
-    void joinPlayers(PlayerInfo* playerone, PlayerInfo* playertwo);
+    void joinPlayers(PlayerInfo* playerone, PlayerInfo* playertwo, Socket* sockone, Socket* socktwo, Socket* socketMain);
     
 };
 #endif

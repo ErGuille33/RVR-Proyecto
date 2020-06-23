@@ -19,13 +19,13 @@ int main(int argc, char **argv)
     pthread_attr_t attr;
     pthread_t id;
 
+    ec.login();
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
     pthread_create(&id, &attr, _client_thread, static_cast<void *>(&ec));
-    ec.login();
-
     //ec.input_thread();
 
 }
+
 
