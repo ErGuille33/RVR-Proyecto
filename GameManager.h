@@ -19,7 +19,8 @@ enum Action
     defensa,
     curacion,
     superdisparo,
-    idle
+    idle,
+    conecct
 };
 
 class Player
@@ -108,9 +109,9 @@ public:
         }
     }
 
-    void setCurrAction(Action act) {
-        currAction = act;
-        currActionInt8 = static_cast<uint8_t>(currAction);
+    void setCurrAction(int act) {
+        currActionInt8 = act;
+        currAction= static_cast<Action>(currAction);
     }
 
     void setId(int newid) {
@@ -147,17 +148,26 @@ public:
     GameManager() {
         player1 = new Player("a", 0);
         player2 = new Player("b", 0);
+       
     }
     ~GameManager()
     {
         delete player1;
         delete player2;
+        delete sock1;
+        delete sock2;
+        delete socket;
+      
+
+
     };
     //Devuelve la situación de ambos jugadores
     void showStats(Player *player)
     {
         cout << player->getName() << " Vidas: " << player->getHealth() << " Balas: " << player->getAmmo() << " Cervezas: " << player->getBeer() << endl;
     }
+
+    void sendResults();
     //Para seleccionar la acción
     void selectionPhase();
 

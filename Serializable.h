@@ -50,4 +50,3 @@ protected:
 };
 
 #endif /* SERIALIZABLE_H_ */
-

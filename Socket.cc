@@ -35,12 +35,34 @@ int Socket::recv(Serializable &obj, Socket * &sock)
 
     char buffer[MAX_MESSAGE_SIZE];
 
+    ssize_t bytes = ::recvfrom(sd, (void*)buffer, MAX_MESSAGE_SIZE, 0, &sa, &sa_len);
+    if ( bytes <= 0 )
+    {
+        return -1;
+    }
+    if ( sock != 0 )
+    {
+        sock = new Socket(&sa, sa_len);
+    }
+    obj.from_bin(buffer);
+    std::cout << bytes << " mensaje recibido" << std::endl;
+    return 0;
+}
+
+int Socket::recvInit(Serializable &obj, Socket * &sock)
+{
+    struct sockaddr sa;
+    socklen_t sa_len = sizeof(struct sockaddr);
+
+    char buffer[MAX_MESSAGE_SIZE];
+
     ssize_t bytes = ::recvfrom(sock->sd, (void*)buffer, MAX_MESSAGE_SIZE, 0, &sa, &sa_len);
     if ( bytes <= 0 )
     {
         return -1;
     }
     obj.from_bin(buffer);
+    std::cout << bytes << " mensaje recibido" << std::endl;
     return 0;
 }
 

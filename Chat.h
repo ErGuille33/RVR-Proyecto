@@ -1,3 +1,5 @@
+#ifndef _GHAT_H
+#define _CHAT_H
 #include <string>
 #include <unistd.h>
 #include <string.h>
@@ -94,54 +96,64 @@ public:
     {
         connect(socket.sd, &socket.sa, socket.sa_len);
         pi = new PlayerInfo(_id, _name, _health, _ammo, _beer, currActionInt8);
-        //std::cout << pi._health << std::endl;
         socket.send(*pi, socket);
 
         std::cout << "LOGIN" << std::endl;
-        waitForInput();
+        playerLoop();
     }
 
     virtual void playerLoop()
     {
-        while (true)
+        while (pi->_health > 0 && pi->_health != 10)
         {
             showStats();
             waitForInput();
             input();
         }
+        if (pi->_health == 0)
+        {
+            cout << "Has muerto. Game Over" << endl;
+        }
+        else if (pi->_health == 10){
+            cout << "Has ganado. Eres un máquina" << endl;
+        }
     }
 
     void waitForInput()
     {
-        Socket *outSocket;
+        Socket *outsocket;
         do
         {
-            std::cout << _name << " me cago en to"<< std::endl;
-            socket.recv(*pi, outSocket);
-        } while (pi->_turnoJugador = 0);
-        std::cout << _name << " introduce acción: 0-Cargar 1-Disparar 2-Defensa 3-Curación 4-SuperDisparo 5-Nada" << std::endl;
+            
+            std::cout << "Primera iteracion del wait for input " << socket.recv(*pi,outsocket) << std::endl;
+            std::cout << pi->_turnoJugador << "turno " << std::endl;
+            std::cout << pi->_id << " id  " << std::endl;
+            _health = pi->_health;
+            _ammo = pi->_ammo;
+            _beer = pi->_beer;
+        
+        } while (pi->_turnoJugador == 0);
+       
         
     }
 
     void input()
     {
+         std::cout << _name << " introduce acción: 0-Cargar 1-Disparar 2-Defensa 3-Curación 4-SuperDisparo 5-Nada" << std::endl;
 
         string aux;
         getline(std::cin, aux);
-        std::cout << aux << std::endl;
 
         int numb;
         numb = stoi(aux);
 
         pi->_action = numb;
         socket.send(*pi, socket);
-
-        std::cout << "Enviado" << std::endl;
     }
 
     void showStats()
     {
-        cout << pi->_name << " Vidas: " << pi->_health << " Balas: " << pi->_ammo << " Cervezas: " << pi->_beer << endl;
+        std::cout << pi->_name << " Vidas: " << pi->_health << " Balas: " << pi->_ammo << " Cervezas: " << pi->_beer << std::endl;
     }
     PlayerInfo *pi;
 };
@@ -155,6 +167,7 @@ public:
     {
         int aux;
         aux = socket.bind();
+        std::cout << aux << "bind" <<std::endl;
     };
 
     void do_messages(Socket *sock1, Socket *sock2);
@@ -170,3 +183,4 @@ private:
     GameManager *gm;
     Socket socket;
 };
+#endif

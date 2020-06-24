@@ -7,11 +7,13 @@
 
 #include <iostream>
 #include <stdexcept>
+//#include "Chat.h"
 
 #include <ostream>
 
 class Socket;
 class Serializable;
+class PlayerInfo;
 
 bool operator== (const Socket &s1, const Socket &s2);
 
@@ -21,7 +23,7 @@ class Socket
 {
 public:
     
-    static const int32_t MAX_MESSAGE_SIZE = 32768;
+    static const int32_t MAX_MESSAGE_SIZE = 14;
 
     Socket(const char * address, const char * port);
 
@@ -31,6 +33,7 @@ public:
     virtual ~Socket(){};
 
     int recv(Serializable &obj, Socket * &sock);
+    int recvInit(Serializable &obj, Socket * &sock);
 
     int recv(Serializable &obj)
     {
@@ -59,3 +62,4 @@ public:
 };
 
 #endif /* SOCKET_H_ */
+

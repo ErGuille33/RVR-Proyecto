@@ -46,7 +46,7 @@ int ChatMessage::from_bin(char *bobj)
 // -----------------------------------------------------------------------------
 
 void ChatServer::do_messages(Socket *sock1, Socket *sock2)
-{
+{/*
     std::cout << "do_messages" << std::endl;
     while (true)
     {
@@ -57,7 +57,7 @@ void ChatServer::do_messages(Socket *sock1, Socket *sock2)
 
         socket.recv(obj, sock2);
         socket.send(obj, *sock1);
-    }
+    }*/
 }
 
 bool ChatServer::accept_players()
@@ -66,9 +66,7 @@ bool ChatServer::accept_players()
 
     listen(socket.sd, 16);
     gm = new GameManager();
-    while (true)
-    {
-        PlayerInfo obj(0, "a", 0, 0, 0, 0);
+        PlayerInfo obj(0, "", 3, 0, 1, 0);
         struct sockaddr_in client_addr;
         socklen_t client_len = sizeof(struct sockaddr_in);
 
@@ -76,44 +74,42 @@ bool ChatServer::accept_players()
         std::cout << "Conexion desde IP: " << inet_ntoa(client_addr.sin_addr) << " PUERTO: " << ntohs(client_addr.sin_port) << std::endl;
         Socket *sock1 = new Socket((struct sockaddr *)&client_addr, client_len);
         sock1->sd = sd_client1;
-        socket.recv(obj, sock1);
-        PlayerInfo *newplayer1 = new PlayerInfo(0, obj._name, obj._health, obj._ammo, obj._beer, obj._action);
+        std::cout << socket.recvInit(obj, sock1) << "Cout del recieve" << std::endl;
+        PlayerInfo *newplayer1 = new PlayerInfo(0,obj._name, obj._health, obj._ammo, obj._beer, obj._action);
         std::cout << newplayer1->_name << " se ha conectado" << std::endl;
 
         int sd_client2 = accept(socket.sd, (struct sockaddr *)&client_addr, &client_len);
         std::cout << "Conexion desde IP: " << inet_ntoa(client_addr.sin_addr) << " PUERTO: " << ntohs(client_addr.sin_port) << std::endl;
         Socket *sock2 = new Socket((struct sockaddr *)&client_addr, client_len);
         sock2->sd = sd_client2;
-        socket.recv(obj, sock2);
+        std::cout << socket.recvInit(obj, sock2)<< "Cout del recieve" << std::endl;
         PlayerInfo *newplayer2 = new PlayerInfo(1, obj._name, obj._health, obj._ammo, obj._beer, obj._action);
+        std::cout << newplayer2->_name << " se ha conectado" << std::endl;
 
         gm->joinPlayers(newplayer1, newplayer2, sock1, sock2, &socket);
 
-        std::cout << newplayer2->_name << " se ha conectado" << std::endl;
-        std::thread t(&GameManager::mainGameLoop, gm);
-        t.detach();
-    }
-        //delete gm;
+        gm->mainGameLoop();
+        return false;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 
 void ChatClient::input_thread()
 {
-    while (true)
+  /*  while (true)
     {
         std::string msg;
         std::getline(std::cin, msg);
 
         ChatMessage em("jose", msg);
         em.type = ChatMessage::MESSAGE;
-        //std::cout << "antes de send" << std::endl;
+
         int cosa = socket.send(em, socket);
-    }
+    }*/
 }
 
 void ChatClient::net_thread()
-{
+{/*
     while (true)
     {
         ChatMessage em;
@@ -121,7 +117,7 @@ void ChatClient::net_thread()
         socket.recv(em);
 
         std::cout << &em.nick[0] << ": " << &em.message[0] << std::endl;
-    }
+    }*/
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -179,12 +175,15 @@ int PlayerInfo::from_bin(char *data)
     //Accion
     memcpy(&_action, tmp, sizeof(uint8_t));
     tmp += sizeof(uint8_t);
+    std::cout << _action << "acciom mensaje "<< std::endl;
     //Id
     memcpy(&_id, tmp, sizeof(uint8_t));
     tmp += sizeof(uint8_t);
+    std::cout << _id << "id mensaje "<< std::endl;
     //Turno de escoger 1 = su , 0 = no
     memcpy(&_turnoJugador, tmp, sizeof(uint8_t));
     tmp += sizeof(uint8_t);
+     std::cout << _turnoJugador << "turno mensaje "<< std::endl;
     //Name
     memcpy(&_name[0], tmp, sizeof(char) * 8);
     tmp += sizeof(char) * 8;
