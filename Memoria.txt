@@ -1,0 +1,31 @@
+Gonzalo Cidoncha Pérez.
+Guillermo Sánchez de Lamadrid Martínez.
+
+.Pistolero Online.
+
+Hemos creado una versión online del clásico juego del "Pistolero", tan jugado por niños y no tan niños en patios de colegio u otras situaciones para matar el tiempo.
+Para el que no esté familiarizado con este juego, consiste básicamente en un juego similar al piedra, papel y tijera, donde el objetivo será matar al adversario quitándole todas sus vidas.
+Existen las siguientes acciones: 1) Recargar (añade una bala al cargador) | 2) Disparo (gaste una bala para disparar al rival) | 3) Escudo (proteje de disparo) | 4) Súper disparo (traspasa escudo. necesita 3 balas para ser lanzado) | 5) Curación (cura 1 vida, necesita cerveza para ser usado).
+Si ambos jugadores disparan a la vez, ninguno recibe daño. Lo mismo sucede con el superdisparo.
+
+Para iniciar el juego, habrá que ejecutar el servidor, que se quedará esperando a empezar la partida hasta recibir la conexión de los dos servidores. Una vez estos esten conectados, comenzará la partida.
+
+-Bucle de juego
+
+El bucle de juego se desarrollará de la siguiente manera:
+	1) El servidor esperará al input de ambos jugadores.
+	2) Una vez haya obtenido este, enviará un mensaje a los jugadores indicando que aún no pueden realizar inputs.Luego realizará los cálculos pértinentes y enviará la información de los dos jugadores a ambos clientes. 
+	3) El cliente actualizará en pantalla el resultado y el nuevo estado de la partida.
+	4) En el caso de que esta termine, se cerrará el servidor y ambos clientes.
+
+- Ficheros:
+
+	1) Socket.cc y Socket.h contienen la clase Socket.
+	2) Serializable.h la clase Serializable.
+	3) Chat.cc y Chat.h contendrán las clases ChatServer (El servidor del juego, que esperará a la conexión de los jugadores y llamará a Gamemanager), ChatClient y ChatMessage (Utilizadas en prácticas anteriores), y las clases PlayerInfo (hija de Serializable) y ClientPLayer, hija de ChatClient y Player, que consistirá básicamente en el jugador.
+	4) GameManager.cc y Gamemanager.h contienten la clase Gamemanager, la cual básicamente controla el juego desde la parte del servidor.
+.
+
+	
+-Desarrollo:
+ 	Primero, realizamos el juego en consola para una sola persona. Seguidamente, realizamos la estructura cliente-servidor y conseguimos realizar el juego online en su totalidad en consola. Por último, lo adaptamos a SDL
