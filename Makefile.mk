@@ -1,7 +1,7 @@
 CC=g++
-CFLAGS=-g -std=c++11 -I.
-DEPS = Socket.h Chat.h GameManager.h
-OBJ = Socket.o Chat.o GameManager.o
+CFLAGS=-g -std=c++11 -lSDL2 -lSDL2_image -I.
+DEPS = Socket.h Chat.h GameManager.h Texture.h Game.h Button.h GameObject.h
+OBJ = Socket.o Chat.o GameManager.o Texture.o Game.o Button.o
 LIBS=-lpthread 
 
 %.o: %.cc $(DEPS)
