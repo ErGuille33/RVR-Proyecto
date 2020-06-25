@@ -45,7 +45,7 @@ int Socket::recv(Serializable &obj, Socket * &sock)
         sock = new Socket(&sa, sa_len);
     }
     obj.from_bin(buffer);
-    std::cout << bytes << " mensaje recibido" << std::endl;
+    std::cout << bytes << " Mensaje recibido" << std::endl;
     return 0;
 }
 
@@ -62,7 +62,7 @@ int Socket::recvInit(Serializable &obj, Socket * &sock)
         return -1;
     }
     obj.from_bin(buffer);
-    std::cout << bytes << " mensaje recibido" << std::endl;
+    std::cout << bytes << " Mensaje recibido" << std::endl;
     return 0;
 }
 
@@ -75,7 +75,6 @@ int Socket::send(Serializable& obj, const Socket& sock)
     char *charData = obj.data();
 
     aux = sendto(sock.sd, charData, obj.size(), 0, &sock.sa, sock.sa_len);
-
     std::cout << aux << " Mensaje enviado" << std::endl;
     return aux;
 }

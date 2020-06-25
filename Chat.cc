@@ -66,7 +66,7 @@ bool ChatServer::accept_players()
 
     listen(socket.sd, 16);
     gm = new GameManager();
-        PlayerInfo* obj = new PlayerInfo(0, "", 3, 0, 1, 0);
+        PlayerInfo obj(0, "", 3, 0, 1, 0);
         struct sockaddr_in client_addr;
         socklen_t client_len = sizeof(struct sockaddr_in);
 
@@ -74,16 +74,16 @@ bool ChatServer::accept_players()
         std::cout << "Conexion desde IP: " << inet_ntoa(client_addr.sin_addr) << " PUERTO: " << ntohs(client_addr.sin_port) << std::endl;
         Socket *sock1 = new Socket((struct sockaddr *)&client_addr, client_len);
         sock1->sd = sd_client1;
-        std::cout << socket.recvInit(*obj, sock1) << "Cout del recieve" << std::endl;
-        PlayerInfo *newplayer1 = new PlayerInfo(0,obj->_name, obj->_health, obj->_ammo, obj->_beer, obj->_action);
+        std::cout << socket.recvInit(obj, sock1) << "Cout del recieve" << std::endl;
+        PlayerInfo *newplayer1 = new PlayerInfo(0,obj._name, obj._health, obj._ammo, obj._beer, obj._action);
         std::cout << newplayer1->_name << " se ha conectado" << std::endl;
 
         int sd_client2 = accept(socket.sd, (struct sockaddr *)&client_addr, &client_len);
         std::cout << "Conexion desde IP: " << inet_ntoa(client_addr.sin_addr) << " PUERTO: " << ntohs(client_addr.sin_port) << std::endl;
         Socket *sock2 = new Socket((struct sockaddr *)&client_addr, client_len);
         sock2->sd = sd_client2;
-        std::cout << socket.recvInit(*obj, sock2)<< "Cout del recieve" << std::endl;
-        PlayerInfo *newplayer2 = new PlayerInfo(1, obj->_name, obj->_health, obj->_ammo, obj->_beer, obj->_action);
+        std::cout << socket.recvInit(obj, sock2)<< "Cout del recieve" << std::endl;
+        PlayerInfo *newplayer2 = new PlayerInfo(1, obj._name, obj._health, obj._ammo, obj._beer, obj._action);
         std::cout << newplayer2->_name << " se ha conectado" << std::endl;
 
         gm->joinPlayers(newplayer1, newplayer2, sock1, sock2, &socket);
@@ -152,7 +152,6 @@ void PlayerInfo::to_bin()
     _name[8] = '\0';
     memcpy(tmp, _name.c_str(), sizeof(char) * 8);
     tmp += sizeof(char) * 8;
-    std::cout << _name << "nombre mensaje "<< std::endl;
 }
 
 int PlayerInfo::from_bin(char *data)
