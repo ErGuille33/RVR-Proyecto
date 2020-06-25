@@ -10,8 +10,9 @@ void GameManager::sendResults(){
     playerInfo1->_turnoJugador = 1;
 
     sock1->send(*playerInfo1,*sock1);
+    sock1->send(*playerInfo2,*sock1);
 
-    sock1->send(*playerInfo1,*sock1);
+
 
     playerInfo2->_ammo = player2->getAmmo();
     playerInfo2->_health = player2->getHealth();
@@ -19,6 +20,7 @@ void GameManager::sendResults(){
     playerInfo2->_turnoJugador = 1;
 
     sock2->send(*playerInfo2,*sock2);
+    sock2->send(*playerInfo1,*sock2);
     std::cout << "Pueden salir ya mis nenes" << std::endl;
 
 }
@@ -27,14 +29,17 @@ void GameManager::selectionPhase()
 {
     Socket *outsocket;
 
+
     sock1->recv(*playerInfo1,outsocket);
     playerInfo1->_turnoJugador = 0;
     sock1->send(*playerInfo1,*sock1);
+    sock1->send(*playerInfo2,*sock1);
      std::cout << "No puedes jubar 1" << std::endl;
 
     sock2->recv(*playerInfo2,outsocket);
     playerInfo2->_turnoJugador = 0;
     sock2->send(*playerInfo2,*sock2);
+     sock2->send(*playerInfo1,*sock2);
      std::cout << "No puedes jubar 2" << std::endl;
 
     player1->_currentAction = static_cast<Action>(playerInfo1->_action);
@@ -63,12 +68,14 @@ int GameManager::mainGameLoop(){
             cout << player2->getName() << " Wins" << endl;
             playerInfo2->_health = 10;
             sock2->send(*playerInfo2,*sock2);
+            sock2->send(*playerInfo1,*sock2);
 
         }
         else {
             cout << player1->getName() << " Wins" << endl;
-            playerInfo1->_health = 10;
+            playerInfo1->_health = 20;
             sock1->send(*playerInfo1,*sock1);
+            sock1->send(*playerInfo2,*sock1);
         }
         return 0;
     }
@@ -461,6 +468,9 @@ void GameManager::joinPlayers(PlayerInfo* playerone, PlayerInfo* playertwo, Sock
     socket = socketMain;
 
     sock1->send(*playerInfo1,*sock1);
+    sock1->send(*playerInfo2,*sock1);
+
     sock2->send(*playerInfo2,*sock2);
+    sock2->send(*playerInfo1,*sock2);
 }
 

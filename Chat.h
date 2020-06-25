@@ -98,23 +98,25 @@ public:
         pi = new PlayerInfo(_id, _name, _health, _ammo, _beer, currActionInt8);
         socket.send(*pi, socket);
 
+        piEnemy = new PlayerInfo(0, "", 3, 0, 0, 0);
         std::cout << "LOGIN" << std::endl;
         playerLoop();
     }
 
     virtual void playerLoop()
     {
-        while (pi->_health > 0 && pi->_health != 10)
+
+        while (pi->_health > 0 && piEnemy->_health > 0)
         {
-            showStats();
             waitForInput();
+            showStats();
             input();
         }
         if (pi->_health == 0)
         {
             cout << "Has muerto. Game Over" << endl;
         }
-        else if (pi->_health == 10){
+        else if (piEnemy->_health == 0){
             cout << "Has ganado. Eres un máquina" << endl;
         }
     }
@@ -125,12 +127,13 @@ public:
         do
         {
             
-            std::cout << "Primera iteracion del wait for input " << socket.recv(*pi,outsocket) << std::endl;
+            std::cout << "Primera iteracion del wait for input 1" << socket.recv(*pi,outsocket) << std::endl;
             std::cout << pi->_turnoJugador << "turno " << std::endl;
             std::cout << pi->_id << " id  " << std::endl;
             _health = pi->_health;
             _ammo = pi->_ammo;
             _beer = pi->_beer;
+            std::cout << "Primera iteracion del wait for input 2" << socket.recv(*piEnemy,outsocket) << std::endl;
         
         } while (pi->_turnoJugador == 0);
        
@@ -153,9 +156,11 @@ public:
 
     void showStats()
     {
-        std::cout << pi->_name << " Vidas: " << pi->_health << " Balas: " << pi->_ammo << " Cervezas: " << pi->_beer << std::endl;
+        std::cout << _name << " Vidas: " << pi->_health << " Balas: " << pi->_ammo << " Cervezas: " << pi->_beer << std::endl;
+        std::cout << piEnemy->_name << " Enemigo vidas: " << piEnemy->_health << " Balas: " << piEnemy->_ammo << " Cervezas: " << piEnemy->_beer << std::endl;
     }
     PlayerInfo *pi;
+    PlayerInfo *piEnemy;
 };
 
 ////////////////////////////////////////////////////////////
