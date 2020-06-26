@@ -5,7 +5,7 @@
 
 extern "C" void * _client_thread(void *arg)
 {
-    ChatClient * server = static_cast<ChatClient *>(arg);
+    Client * server = static_cast<Client *>(arg);
 
     server->net_thread();
 
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
     pthread_create(&id, &attr, _client_thread, static_cast<void *>(&ec));
-    //ec.input_thread();
+    
 	delete g;
 
 }

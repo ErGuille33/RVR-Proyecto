@@ -12,7 +12,7 @@ int main(int argc, char **argv)
     sigset_t waitset;
     int      sig;
 
-    ChatServer es(argv[1], argv[2]);
+    Server es(argv[1], argv[2]);
 
     es.accept_players();
     sigemptyset(&waitset);

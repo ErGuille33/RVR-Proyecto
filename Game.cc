@@ -42,6 +42,16 @@ Game::Game(ClientPlayer* cp) {
 	readyB = new Button(175, 200, 150, 150, texturas_[Ready], player, ready);
 	readyB->setEnabled();
 
+	recargaE.setValue(550, 75, 200, 150, texturas_[Recarga1]);
+	recargaE.setEnabled(false);
+	ataqueE.setValue(550, 75, 200, 150, texturas_[Ataque1]);
+	ataqueE.setEnabled(false);
+	escudoE.setValue(550, 75, 200, 150, texturas_[Escudo1]);
+	escudoE.setEnabled(false);
+	beerE.setValue(550, 75, 200, 150, texturas_[Beer1]);
+	beerE.setEnabled(false);
+	superataqueE.setValue(500, 75, 200, 150, texturas_[Superataque1]);
+	superataqueE.setEnabled(false);
 
 	wood.setValue(375, 0, 91, 600, texturas_[Wood]);
 
@@ -71,7 +81,7 @@ Game::Game(ClientPlayer* cp) {
 	enemyBeer.setValue(720, 520, 50, 50, texturas_[Cerveza]);
 
 	cowboy.setValue(125, 290, 150, 150, texturas_[CowBoy1]);
-	bandit.setValue(550, 210, 150, 150, texturas_[Bandit2]);
+	bandit.setValue(550, 290, 150, 150, texturas_[Bandit2]);
 
 	win.setValue(0,0,800,600,texturas_[Win]);
 	win.setEnabled(false);
@@ -110,6 +120,11 @@ void Game::render() {
 	enemyAmmo4.render();
 	enemyAmmo5.render();
 	enemyAmmo6.render();
+	recargaE.render();
+	ataqueE.render();
+	escudoE.render();
+	beerE.render();
+	superataqueE.render();
 	beer1.render();
 	enemyBeer.render();
 	win.render();
@@ -320,24 +335,53 @@ void Game::showStats(){
 	switch (player->piEnemy->_action)
 	{
 	case 0:
-		std::cout << " recargar" << std::endl;
+		superataqueE.setEnabled(false);
+		ataqueE.setEnabled(false);
+		escudoE.setEnabled(false);
+		recargaE.setEnabled(true);
+		beerE.setEnabled(false);
 		break;
 	case 1:
-		std::cout << " disparar" << std::endl;
+		superataqueE.setEnabled(false);
+		ataqueE.setEnabled(true);
+		escudoE.setEnabled(false);
+		recargaE.setEnabled(false);
+		beerE.setEnabled(false);
 		break;	
 	case 2:
-		std::cout << " defender" << std::endl;
+		superataqueE.setEnabled(false);
+		ataqueE.setEnabled(false);
+		escudoE.setEnabled(true);
+		recargaE.setEnabled(false);
+		beerE.setEnabled(false);
 		break;
 	case 3:
-		std::cout << " tal" << std::endl;
+		superataqueE.setEnabled(false);
+		ataqueE.setEnabled(false);
+		escudoE.setEnabled(false);
+		recargaE.setEnabled(false);
+		beerE.setEnabled(true);
 		break;
 	case 4:
-		std::cout << " lo otro" << std::endl;
+		superataqueE.setEnabled(true);
+		ataqueE.setEnabled(false);
+		escudoE.setEnabled(false);
+		recargaE.setEnabled(false);
+		beerE.setEnabled(false);
 		break;
 	case 5:
-		std::cout << " nada" << std::endl;
+		superataqueE.setEnabled(false);
+		ataqueE.setEnabled(false);
+		escudoE.setEnabled(false);
+		recargaE.setEnabled(false);
+		beerE.setEnabled(false);
 		break;			
 	default:
+		superataqueE.setEnabled(false);
+		ataqueE.setEnabled(false);
+		escudoE.setEnabled(false);
+		recargaE.setEnabled(false);
+		beerE.setEnabled(false);
 		break;
 	}
 	
@@ -346,17 +390,19 @@ void Game::showStats(){
 void Game::run() {
 	uint32_t startTime, frameTime;
 	startTime = SDL_GetTicks();
+	showStats();
 	while (!exit) {
 		frameTime = SDL_GetTicks() - startTime;
 		if (frameTime >= FRAME_RATE) {
 			handleEvents();
 			update();
+			if(player->pulsado){
 			showStats();
+			}
 			render();
 			startTime = SDL_GetTicks();
 		}
 	}
-	std::cout << "hola" << std::endl;
 	if(player->win)
 	{
 	win.setEnabled(true);

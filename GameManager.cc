@@ -18,7 +18,7 @@ void GameManager::sendResults(){
     sock1->send(*playerInfo2,*sock1);
     sock2->send(*playerInfo2,*sock2);
     sock1->send(*playerInfo1,*sock2);
-    std::cout << "Pueden salir ya mis nenes" << std::endl;
+    std::cout << "Turno de los jugadores: " << std::endl;
 
 }
 
@@ -29,7 +29,7 @@ void GameManager::selectionPhase()
     sock1->recv(*playerInfo1,outsocket);
     std::cout << playerInfo1->_action << " accion juugador 1"<<std::endl;
     playerInfo1->_turnoJugador = 0;
-    std::cout << "No puedes jubar 1" << std::endl;
+    std::cout << "Turno jugador 1 terminado" << std::endl;
     sock2->recv(*playerInfo2,outsocket);
     std::cout << playerInfo2->_action << " accion juugador 2"<<std::endl;
     playerInfo2->_turnoJugador = 0;
@@ -38,7 +38,7 @@ void GameManager::selectionPhase()
     sock1->send(*playerInfo2,*sock1);
     sock2->send(*playerInfo2,*sock2);
     sock2->send(*playerInfo1,*sock2);
-    std::cout << "No puedes jubar 2" << std::endl;
+    std::cout << "Turno jugador 2 terminado" << std::endl;
 
     player1->_currentAction = static_cast<Action>(playerInfo1->_action);
     player2->_currentAction = static_cast<Action>(playerInfo2->_action);

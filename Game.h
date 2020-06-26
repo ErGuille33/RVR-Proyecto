@@ -9,10 +9,11 @@
 #include "Button.h"
 #include "GameObject.h"
 
-enum TexturesName{Background, Recarga, Ataque, Beer, Escudo, Superataque, Wood, Heart, Ammo, Cerveza, Bandit1, Bandit2, Bandit3, CowBoy1, CowBoy2, CowBoy3, Ready, Muerto, Win};
+enum TexturesName{Background, Recarga, Ataque, Beer, Escudo, Superataque, Wood, Heart, Ammo, Cerveza, Bandit1, Bandit2, Bandit3, CowBoy1, CowBoy2, CowBoy3,
+ Ready, Muerto, Win, Recarga1, Ataque1, Beer1, Escudo1, Superataque1};
 const int WIN_WIDTH = 800;
 const int WIN_HEIGHT = 600;
-const int NUM_TEXTURES = 19;
+const int NUM_TEXTURES = 24;
 const string RUTA = "Assets/";
 const uint32_t FRAME_RATE = 30;
 const double speed = 10;
@@ -34,7 +35,8 @@ private:
 	};
 	TexturesAtributes atributes_[NUM_TEXTURES] = { "background.png", 1, 1, "Reload.png", 1, 1, "Ataque.png", 1, 1, "beer.png", 1, 1, "Escudo.png", 1, 1, 
 	"SuperAtaque.png", 1, 1, "Wood.png", 1, 1, "heart.png", 1, 1, "ammo.png", 1, 1, "beer0.png", 1, 1, "Bd1.png", 1, 1, "Bd3.png", 1, 1, "Bd5.png", 1, 1,
-	"Cb1.png", 1, 1, "Cb2.png", 1, 1, "Cb4.png", 1, 1, "Flecha1.png", 1, 1, "Muerto.png", 1, 1, "Win.png", 1, 1};
+	"Cb1.png", 1, 1, "Cb2.png", 1, 1, "Cb4.png", 1, 1, "Flecha1.png", 1, 1, "Muerto.png", 1, 1, "Win.png", 1, 1,"Reload1.png", 1, 1, "Ataque1.png", 1, 1, "Beer1.png", 1, 1, "Escudo1.png", 1, 1, 
+	"SuperAtaque1.png", 1, 1};
 
 	ClientPlayer* player;
 
@@ -45,6 +47,11 @@ private:
 	Button* superataqueB;
 	Button* readyB;
 
+	GameObject recargaE;
+	GameObject escudoE;
+	GameObject ataqueE;
+	GameObject beerE;
+	GameObject superataqueE;
 
 	GameObject wood;
 

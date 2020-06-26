@@ -16,37 +16,12 @@
 
 using namespace std;
 using std::string;
-class ChatMessage : public Serializable
+
+class Client
 {
 public:
-    static const size_t MESSAGE_SIZE = sizeof(char) * 88 + sizeof(uint8_t);
-
-    enum MessageType
-    {
-        LOGIN = 0,
-        MESSAGE = 1,
-        LOGOUT = 2
-    };
-
-    ChatMessage(){};
-
-    ChatMessage(const std::string &n, const std::string &m) : nick(n), message(m){};
-
-    void to_bin();
-
-    int from_bin(char *bobj);
-
-    uint8_t type;
-
-    std::string nick;
-    std::string message;
-};
-
-class ChatClient
-{
-public:
-    ChatClient(const char *s, const char *p) : socket(s, p){};
-    virtual ~ChatClient(){};
+    Client(const char *s, const char *p) : socket(s, p){};
+    virtual ~Client(){};
 
     void input_thread();
 
@@ -87,18 +62,17 @@ public:
     static const size_t MESSAGE_SIZE = sizeof(uint8_t) * 6 + sizeof(char) * 8;
 };
 
-class ClientPlayer : public Player, public ChatClient
+class ClientPlayer : public Player, public Client
 {
 public:
-    ClientPlayer(const char *s, const char *p, const char *n, int id) : Player(n, id), ChatClient(s, p) {}
+    ClientPlayer(const char *s, const char *p, const char *n, int id) : Player(n, id), Client(s, p) {}
 
     virtual void login()
     {
         connect(socket.sd, &socket.sa, socket.sa_len);
         pi = new PlayerInfo(_id, _name, _health, _ammo, _beer, currActionInt8);
         socket.send(*pi, socket);
-        piEnemy = new PlayerInfo(0, "", 3, 0, 1, 0);
-        std::cout << "LOGIN" << std::endl;
+        piEnemy = new PlayerInfo(0, "", 3, 0, 1, 5);
     }
 
     void waitForInput()
@@ -117,21 +91,19 @@ public:
     void input(int enviar)
     {
         pi->_action = enviar;
-        std::cout << pi->_action << " accion" << std::endl;
         socket.send(*pi, socket);
     }
 
     void showStats()
     {
-        std::cout << _name << " Vidas: " << pi->_health << " Balas: " << pi->_ammo << " Cervezas: " << pi->_beer << std::endl;
-        std::cout << piEnemy->_name << " Vidas: " << piEnemy->_health << " Balas: " << piEnemy->_ammo << " Cervezas: " << piEnemy->_beer << std::endl;
+        std::cout << "Vidas: " << pi->_health << " Balas: " << pi->_ammo << " Cervezas: " << pi->_beer << std::endl;
+        std::cout << "Vidas: " << piEnemy->_health << " Balas: " << piEnemy->_ammo << " Cervezas: " << piEnemy->_beer << std::endl;
     }
 
     bool update(int enviar)
     {
         if (pulsado)
         {
-            std::cout << "pulsado" << std::endl;
             if (pi->_health > 0 && piEnemy->_health > 0)
             {
 
@@ -165,22 +137,18 @@ public:
 
 ////////////////////////////////////////////////////////////
 
-class ChatServer
+class Server
 {
 public:
-    ChatServer(const char *s, const char *p) : socket(s, p), gm()
+    Server(const char *s, const char *p) : socket(s, p), gm()
     {
         int aux;
         aux = socket.bind();
-        std::cout << aux << "bind" << std::endl;
     };
-
-    void do_messages(Socket *sock1, Socket *sock2);
 
     bool accept_players();
 
 private:
-    std::vector<Socket *> clients;
 
     ClientPlayer *client1;
     ClientPlayer *client2;
