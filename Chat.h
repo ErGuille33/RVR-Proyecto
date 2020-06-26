@@ -106,14 +106,12 @@ public:
         Socket *outsocket;
         do
         {
-            socket.recv(*pi,outsocket);
+            socket.recv(*pi, outsocket);
             _health = pi->_health;
             _ammo = pi->_ammo;
             _beer = pi->_beer;
-            socket.recv(*piEnemy,outsocket);
+            socket.recv(*piEnemy, outsocket);
         } while (pi->_turnoJugador == 0);
-       
-        
     }
 
     void input(int enviar)
@@ -129,24 +127,31 @@ public:
         std::cout << piEnemy->_name << " Vidas: " << piEnemy->_health << " Balas: " << piEnemy->_ammo << " Cervezas: " << piEnemy->_beer << std::endl;
     }
 
-    bool update(int enviar) {
-        if(pulsado) {
-            if (pi->_health > 0 && piEnemy->_health > 0)
+    bool update(int enviar)
+    {
+        std::cout << piEnemy->_name << " Vidas: " << piEnemy->_health << " Balas: " << std::endl;
+
+        if (pi->_health > 0 && piEnemy->_health > 0)
+        {
+            waitForInput();
+
+            showStats();
+            if (pulsado)
             {
-                waitForInput();
-                showStats();
                 input(enviar);
             }
-            if (pi->_health == 0)
-            {
-                cout << "Has muerto. Game Over" << endl;
-                return false;
-            }
-            else if (piEnemy->_health == 0){
-                cout << "Has ganado. Eres un máquina" << endl;
-                return false;
-            }
         }
+        if (pi->_health == 0)
+        {
+            cout << "Has muerto. Game Over" << endl;
+            return false;
+        }
+        else if (piEnemy->_health == 0)
+        {
+            cout << "Has ganado. Eres un máquina" << endl;
+            return false;
+        }
+
         return true;
     }
 
@@ -165,7 +170,7 @@ public:
     {
         int aux;
         aux = socket.bind();
-        std::cout << aux << "bind" <<std::endl;
+        std::cout << aux << "bind" << std::endl;
     };
 
     void do_messages(Socket *sock1, Socket *sock2);

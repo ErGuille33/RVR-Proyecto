@@ -9,14 +9,13 @@ void GameManager::sendResults(){
     playerInfo1->_beer = player1->getBeer();
     playerInfo1->_turnoJugador = 1;
 
-    sock1->send(*playerInfo1,*sock1);
-    sock1->send(*playerInfo2,*sock1);
-
     playerInfo2->_ammo = player2->getAmmo();
     playerInfo2->_health = player2->getHealth();
     playerInfo2->_beer = player2->getBeer();
     playerInfo2->_turnoJugador = 1;
 
+    sock1->send(*playerInfo1,*sock1);
+    sock1->send(*playerInfo2,*sock1);
     sock2->send(*playerInfo2,*sock2);
     sock1->send(*playerInfo1,*sock2);
     std::cout << "Pueden salir ya mis nenes" << std::endl;
@@ -30,13 +29,13 @@ void GameManager::selectionPhase()
     sock1->recv(*playerInfo1,outsocket);
     std::cout << playerInfo1->_action << " accion juugador 1"<<std::endl;
     playerInfo1->_turnoJugador = 0;
-    sock1->send(*playerInfo1,*sock1);
-    sock1->send(*playerInfo2,*sock1);
     std::cout << "No puedes jubar 1" << std::endl;
-
     sock2->recv(*playerInfo2,outsocket);
     std::cout << playerInfo2->_action << " accion juugador 2"<<std::endl;
     playerInfo2->_turnoJugador = 0;
+
+    sock1->send(*playerInfo1,*sock1);
+    sock1->send(*playerInfo2,*sock1);
     sock2->send(*playerInfo2,*sock2);
     sock2->send(*playerInfo1,*sock2);
     std::cout << "No puedes jubar 2" << std::endl;

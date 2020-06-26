@@ -294,16 +294,14 @@ void Game::run() {
 	uint32_t startTime, frameTime;
 	startTime = SDL_GetTicks();
 	while (!exit) {
-		showStats();
-		render();
-		handleEvents();
 		frameTime = SDL_GetTicks() - startTime;
 		if (frameTime >= FRAME_RATE) {
+			showStats();
+			render();
 			update();
+			handleEvents();
 			startTime = SDL_GetTicks();
 		}
-		showStats();
-		render();
 	}
 }
 

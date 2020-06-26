@@ -17,6 +17,7 @@ const string RUTA = "Assets/";
 const uint32_t FRAME_RATE = 30;
 const double speed = 10;
 
+
 class Game
 {
 private:
@@ -70,8 +71,6 @@ private:
 	GameObject beer1;
 	GameObject enemyBeer;
 
-
-
 	int enviar;
 
 public:
@@ -91,5 +90,8 @@ public:
 	
 };
 	
+	
+
+
 	
 
