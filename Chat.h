@@ -129,35 +129,37 @@ public:
 
     bool update(int enviar)
     {
-        std::cout << piEnemy->_name << " Vidas: " << piEnemy->_health << " Balas: " << std::endl;
-
-        if (pi->_health > 0 && piEnemy->_health > 0)
+        if (pulsado)
         {
-            waitForInput();
-
-            showStats();
-            if (pulsado)
+            std::cout << "pulsado" << std::endl;
+            if (pi->_health > 0 && piEnemy->_health > 0)
             {
+
+                waitForInput();
+
+                showStats();
                 input(enviar);
+
+            }
+            if (pi->_health == 0)
+            {
+                cout << "Has muerto. Game Over" << endl;
+                win = false;
+                return false;
+            }
+            else if (piEnemy->_health == 0)
+            {
+                cout << "Has ganado. Eres un máquina" << endl;
+                win = true;
+                return false;
             }
         }
-        if (pi->_health == 0)
-        {
-            cout << "Has muerto. Game Over" << endl;
-            return false;
-        }
-        else if (piEnemy->_health == 0)
-        {
-            cout << "Has ganado. Eres un máquina" << endl;
-            return false;
-        }
-
         return true;
     }
 
     PlayerInfo *pi;
     PlayerInfo *piEnemy;
-
+    bool win = false;
     bool pulsado = false;
 };
 

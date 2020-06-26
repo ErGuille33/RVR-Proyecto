@@ -16,6 +16,7 @@ class Button {
         int posy_;
         int w_;
         int h_;
+        bool enabled = true;
         Texture* texture_;
 
     public:
@@ -25,5 +26,8 @@ class Button {
         }
         void render();
         bool handleEvent(SDL_Event const& evt);
+        void setEnabled() {
+            enabled = !enabled;
+        }
     
 };

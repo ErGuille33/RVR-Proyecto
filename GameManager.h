@@ -29,7 +29,7 @@ protected:
     int _id;
     string _name;
     int _health = 3;
-    int _beer = 2;
+    int _beer = 1;
     int _ammo = 0;
 
     Action currAction = Action::idle;
@@ -43,7 +43,7 @@ public:
         _id = id;
         _health = 3;
         _ammo = 0;
-        _beer = 3;
+        _beer = 1;
         currAction = Action::idle;
         currActionInt8 = 5;    
     };

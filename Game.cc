@@ -2,6 +2,7 @@
 
 void Game::recargar(ClientPlayer* cp){
 	cp->pi->_action = 0;
+
 }
 void Game::disparar(ClientPlayer* cp){
 	cp->pi->_action = 1;
@@ -14,6 +15,9 @@ void Game::beer(ClientPlayer* cp){
 }
 void Game::superdisparo(ClientPlayer* cp){
 	cp->pi->_action = 4;
+}
+void Game::ready(ClientPlayer* cp){
+	cp->pi->_action = 5;
 }
 
 Game::Game(ClientPlayer* cp) {
@@ -30,11 +34,14 @@ Game::Game(ClientPlayer* cp) {
 	player = cp;
 	player->login();
 
-	recargaB = new Button(125, 210, 150, 100, texturas_[Recarga], player, recargar);
+	recargaB = new Button(125, 190, 150, 100, texturas_[Recarga], player, recargar);
 	ataqueB = new Button(50, 10, 150, 100, texturas_[Ataque], player, disparar);
 	escudoB = new Button(225, 10, 150, 100, texturas_[Escudo], player, defender);
 	beerB = new Button(50, 100, 150, 100, texturas_[Beer], player, beer);
 	superataqueB = new Button(225, 100, 150, 100, texturas_[Superataque], player, superdisparo);
+	readyB = new Button(175, 200, 150, 150, texturas_[Ready], player, ready);
+	readyB->setEnabled();
+
 
 	wood.setValue(375, 0, 91, 600, texturas_[Wood]);
 
@@ -63,16 +70,27 @@ Game::Game(ClientPlayer* cp) {
 	beer1.setValue(300, 520, 50, 50, texturas_[Cerveza]);
 	enemyBeer.setValue(720, 520, 50, 50, texturas_[Cerveza]);
 
+	cowboy.setValue(125, 290, 150, 150, texturas_[CowBoy1]);
+	bandit.setValue(550, 210, 150, 150, texturas_[Bandit2]);
+
+	win.setValue(0,0,800,600,texturas_[Win]);
+	win.setEnabled(false);
+	lose.setValue(0,0,800,600,texturas_[Muerto]);
+	lose.setEnabled(false);
+
 }
 
 void Game::render() {
 	SDL_RenderClear(renderer_);
 	SDL_RenderCopy(renderer_, texturas_[Background]->getTexture(), NULL, NULL);
+	cowboy.render();
+	bandit.render();
 	recargaB->render();
 	ataqueB->render();
 	beerB->render();
 	escudoB->render();
 	superataqueB->render();
+	readyB->render();
 	wood.render();
 	heart1.render();
 	heart2.render();
@@ -94,6 +112,8 @@ void Game::render() {
 	enemyAmmo6.render();
 	beer1.render();
 	enemyBeer.render();
+	win.render();
+	lose.render();
 	SDL_RenderPresent(renderer_);
 }
 
@@ -110,8 +130,17 @@ void Game::handleEvents() {
 		if(!player->pulsado) player->pulsado = beerB->handleEvent(evt);
 		if(!player->pulsado) player->pulsado = escudoB->handleEvent(evt);
 		if(!player->pulsado) player->pulsado = superataqueB->handleEvent(evt);
+		if(!player->pulsado) player->pulsado = readyB->handleEvent(evt);
 		if(player->pulsado) {
-			std::cout << "Pulsado " << player->pi->_action << std::endl;
+			recargaB->setEnabled();
+			ataqueB->setEnabled();
+			escudoB->setEnabled();
+			beerB->setEnabled();
+			superataqueB->setEnabled();
+			readyB->setEnabled();
+			cowboy.setEnabled();
+			bandit.setEnabled();
+			std::cout << "Pulsado "<< player->pulsado << player->pi->_action << std::endl;
 			enviar = player->pi->_action;
 		}
 	}
@@ -288,6 +317,30 @@ void Game::showStats(){
 	else if(player->piEnemy->_beer == 0){
 		enemyBeer.setEnabled(false);
 	}
+	switch (player->piEnemy->_action)
+	{
+	case 0:
+		std::cout << " recargar" << std::endl;
+		break;
+	case 1:
+		std::cout << " disparar" << std::endl;
+		break;	
+	case 2:
+		std::cout << " defender" << std::endl;
+		break;
+	case 3:
+		std::cout << " tal" << std::endl;
+		break;
+	case 4:
+		std::cout << " lo otro" << std::endl;
+		break;
+	case 5:
+		std::cout << " nada" << std::endl;
+		break;			
+	default:
+		break;
+	}
+	
 }
 
 void Game::run() {
@@ -296,13 +349,25 @@ void Game::run() {
 	while (!exit) {
 		frameTime = SDL_GetTicks() - startTime;
 		if (frameTime >= FRAME_RATE) {
+			handleEvents();
+			update();
 			showStats();
 			render();
-			update();
-			handleEvents();
 			startTime = SDL_GetTicks();
 		}
 	}
+	std::cout << "hola" << std::endl;
+	if(player->win)
+	{
+	win.setEnabled(true);
+	}
+	else
+	{
+	lose.setEnabled(true);
+	}
+	showStats();
+	render();
+	SDL_Delay(5000);
 }
 
 void Game::update() {

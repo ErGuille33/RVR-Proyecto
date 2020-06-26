@@ -33,6 +33,9 @@ class GameObject {
         void setEnabled(bool aux) {
             enabled = aux;
         }
+         void setEnabled() {
+            enabled = !enabled;
+        }
 
         void setValue(int posx, int posy, int w, int h, Texture* texture){
             posx_ = posx;
@@ -41,5 +44,7 @@ class GameObject {
             h_ = h;
             texture_ = texture;
        }
+
+       
 
 };
