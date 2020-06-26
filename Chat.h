@@ -97,7 +97,7 @@ public:
         connect(socket.sd, &socket.sa, socket.sa_len);
         pi = new PlayerInfo(_id, _name, _health, _ammo, _beer, currActionInt8);
         socket.send(*pi, socket);
-        piEnemy = new PlayerInfo(0, "", 3, 0, 0, 0);
+        piEnemy = new PlayerInfo(0, "", 3, 0, 1, 0);
         std::cout << "LOGIN" << std::endl;
     }
 
@@ -118,15 +118,6 @@ public:
 
     void input(int enviar)
     {
-        // std::cout << _name << "Introduce acción: 0-Cargar 1-Disparar 2-Defensa 3-Curación 4-SuperDisparo 5-Nada" << std::endl;
-
-        // string aux;
-        // getline(std::cin, aux);
-
-        // int numb;
-        // numb = stoi(aux);
-
-        // pi->_action = numb;
         pi->_action = enviar;
         std::cout << pi->_action << " accion" << std::endl;
         socket.send(*pi, socket);

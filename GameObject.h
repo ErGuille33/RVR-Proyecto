@@ -12,6 +12,9 @@ class GameObject {
         bool enabled = true;
 
     public:
+        GameObject(){
+
+        };
         GameObject(int posx, int posy, int w, int h, Texture* texture) {
             posx_ = posx;
             posy_ = posy;
@@ -19,7 +22,7 @@ class GameObject {
             h_ = h;
             texture_ = texture;
         }
-
+        ~GameObject(){};
         void render() {
             if(enabled) {
                 SDL_Rect r = { posx_, posy_, w_, h_ };
@@ -31,4 +34,12 @@ class GameObject {
             enabled = aux;
         }
 
-}
+        void setValue(int posx, int posy, int w, int h, Texture* texture){
+            posx_ = posx;
+            posy_ = posy;
+            w_ = w;
+            h_ = h;
+            texture_ = texture;
+       }
+
+};
