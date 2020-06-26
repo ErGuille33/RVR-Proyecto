@@ -1,4 +1,8 @@
-# RVR Proyecto
+# Pistolero Online
+
+Proyecto realizado por
+Guillermo Sanchez de Lamadrid Martinez
+Gonzalo Cidoncha Perez
 
 Compilar el proyecto con el comando de consola: make -f Makefile.mk all
 
